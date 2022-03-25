@@ -29,14 +29,16 @@ function verifyCallback(accessToke, refreshToken, profile, done) {
   done(null, profile);
 }
 
+// save the session to the cookie
 passport.use(new Strategy(AUTH_OPTIONS, verifyCallback));
 
-passport.serializeUser(function (user, done) {
-  done(null, user);
+// read the session from the cookie
+passport.serializeUser((user, done) => {
+  done(null, user.id);
 });
 
-passport.deserializeUser(function (user, done) {
-  done(null, user);
+passport.deserializeUser((id, done) => {
+  done(null, id);
 });
 
 const app = express();
@@ -51,6 +53,7 @@ app.use(
   })
 );
 app.use(passport.initialize());
+app.use(passport.session());
 
 function checkLoggedIn(req, res, next) {
   const isLoggedIn = true;
